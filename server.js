@@ -11,7 +11,8 @@ app.use(express.urlencoded({ extended: true }));
 /* Securing webhook with middleware */
 app.post("/opm", validate, (req, res) => {
     const data = req.body;
-    handleNewChapt(data.source, data.chapters); // your code here
+    if (data.source === "test") return;
+    handleNewChapt(data); // your code here
 });
 
 app.listen(port, () => {
@@ -20,15 +21,14 @@ app.listen(port, () => {
 
 /**
  * Handle new chapter(s), your logic here
- * @param {'manga'|'webcomic'} source 
- * @param {Array} chapters 
+ * @param {any} data webhook object
  */
-function handleNewChapt(source, chapters) {
+function handleNewChapt(data) {
     /* YOUR CODE HERE */
-    let filename = source === "manga" ? "webhook_manga" : "webhook_webcomic";
-    fs.writeFile(filename, JSON.stringify(chapters, undefined, 2), "utf-8", () => {
+    let filename = data.source === "manga" ? "webhook_manga" : "webhook_webcomic";
+    fs.writeFile(filename + ".json", JSON.stringify(data, undefined, 2), "utf-8", () => {
         console.log("write file done");
-    })
+    });
 }
 
 /**
