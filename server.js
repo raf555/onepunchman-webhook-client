@@ -3,7 +3,7 @@ const { createHmac, timingSafeEqual } = require("crypto");
 const fs = require("fs");
 
 const app = express();
-const port = parseInt(process.env.PORT) || 3002;
+const port = parseInt(process.env.PORT) || 3000;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
