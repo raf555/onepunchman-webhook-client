@@ -11,7 +11,7 @@ app.use(express.urlencoded({ extended: true }));
 /* Securing webhook with middleware */
 app.post("/opm", validate, (req, res) => {
     const data = req.body;
-    if (data.source === "test") return;
+    if (data.type === "test") return;
     handleNewChapt(data); // your code here
 });
 
