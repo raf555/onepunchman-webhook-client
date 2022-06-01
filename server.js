@@ -1,5 +1,5 @@
 const express = require("express");
-const { createHmac, timingSafeEqual } = require("crypto");
+const { signatureValidation } = require("./utils");
 const fs = require("fs");
 
 const app = express();
@@ -41,33 +41,12 @@ function handleNewChapt(data) {
  */
 /* Securing webhook as middleware (optional, BUT highly recommended) */
 function validate(req, res, next) {
-    const signature = req.header("opm-signature-sha256");
     const opmkey = req.header("opmkey");
-
-    /* secure compare using timingSafeEqual to avoid timing attack */
-    function secureCompare(a, b) {
-        if (a.length !== b.length) {
-            return false;
-        }
-        return timingSafeEqual(a, b);
-    }
-
-    /* signature Validation */
-    function signatureValidation() {
-        if (!opmkey || !signature) return false;
-
-        let secret = process.env.opm_secret || ""; // your secret key
-
-        let signbuf = Buffer.from(signature, "base64");
-        let mysign = createHmac("SHA256", secret).update(JSON.stringify(req.body)).digest();
-
-        return secureCompare(signbuf, mysign);
-    }
 
     let isValid = false;
 
     /* Validate the incoming webhook */
-    if (signatureValidation()) {
+    if (opmkey && signatureValidation(req)) {
         // if valid, check for incoming webhook type
         const data = req.body;
 
